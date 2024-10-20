@@ -31,6 +31,11 @@ public abstract class GameObject {
 
     public abstract Rectangle getBounds();
 
+    public void setLocation(final int x, final int y){
+        this.setX(x);
+        this.setY(y);
+    }
+
     public Game getGame() {
         return game;
     }
