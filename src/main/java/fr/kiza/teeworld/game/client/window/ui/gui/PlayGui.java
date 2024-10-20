@@ -39,42 +39,42 @@ public class PlayGui extends GuiHandler implements ActionListener {
 
     @Override
     public void mouseClicked(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void mousePressed(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void mouseReleased(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void mouseEntered(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void mouseExited(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void mouseDragged(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void mouseMoved(MouseEvent event) {
-
+        this.handleMouseEvent(event);
     }
 
     @Override
     public void keyTyped(KeyEvent event) {
-
+        this.handleKeyboardEvent(event);
     }
 
     @Override
@@ -87,17 +87,41 @@ public class PlayGui extends GuiHandler implements ActionListener {
             System.exit(0);
         }
 
-        this.game.getHandler().objects.stream()
-                .filter(gameObject -> gameObject instanceof Player)
-                .map(gameObject -> (Player) gameObject)
-                .forEach(player -> player.keyPressed(event));
+        this.handleKeyboardEvent(event);
     }
 
     @Override
     public void keyReleased(KeyEvent event) {
+        this.handleKeyboardEvent(event);
+    }
+
+    private void handleMouseEvent(final MouseEvent event){
         this.game.getHandler().objects.stream()
                 .filter(gameObject -> gameObject instanceof Player)
                 .map(gameObject -> (Player) gameObject)
-                .forEach(player -> player.keyReleased(event));
+                .forEach(player -> {
+                    switch (event.getID()){
+                        case MouseEvent.MOUSE_CLICKED -> player.mouseClicked(event);
+                        case MouseEvent.MOUSE_PRESSED -> player.mousePressed(event);
+                        case MouseEvent.MOUSE_RELEASED -> player.mouseReleased(event);
+                        case MouseEvent.MOUSE_ENTERED -> player.mouseEntered(event);
+                        case MouseEvent.MOUSE_EXITED -> player.mouseExited(event);
+                        case MouseEvent.MOUSE_DRAGGED -> player.mouseDragged(event);
+                        case MouseEvent.MOUSE_MOVED -> player.mouseMoved(event);
+                    }
+                });
+    }
+
+    private void handleKeyboardEvent(final KeyEvent event){
+        this.game.getHandler().objects.stream()
+                .filter(gameObject -> gameObject instanceof Player)
+                .map(gameObject -> (Player) gameObject)
+                .forEach(player -> {
+                    switch (event.getID()){
+                        case KeyEvent.KEY_TYPED -> player.keyTyped(event);
+                        case KeyEvent.KEY_PRESSED -> player.keyPressed(event);
+                        case KeyEvent.KEY_RELEASED -> player.keyReleased(event);
+                    }
+                });
     }
 }
