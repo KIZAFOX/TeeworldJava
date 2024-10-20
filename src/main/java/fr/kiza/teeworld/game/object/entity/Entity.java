@@ -15,11 +15,6 @@ public abstract class Entity extends GameObject {
         super(game, objectType, x, y);
     }
 
-    public void setLocation(final int x, final int y){
-        this.setX(x);
-        this.setY(y);
-    }
-
     public float getGravity() {
         return GRAVITY;
     }
