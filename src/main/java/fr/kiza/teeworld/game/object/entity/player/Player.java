@@ -1,19 +1,26 @@
 package fr.kiza.teeworld.game.object.entity.player;
 
 import fr.kiza.teeworld.game.client.window.Game;
+import fr.kiza.teeworld.game.client.window.ui.handler.ActionListener;
+import fr.kiza.teeworld.game.object.entity.player.line.Line;
 import fr.kiza.teeworld.game.object.entity.player.listeners.PlayerListeners;
 import fr.kiza.teeworld.game.object.ObjectType;
 import fr.kiza.teeworld.game.object.entity.Entity;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import static fr.kiza.teeworld.game.client.window.GamePanel.*;
 
-public class Player extends Entity {
+public class Player extends Entity implements ActionListener {
 
     protected final PlayerCollision playerCollision;
     protected final PlayerListeners playerListeners;
+
+    private Line currentLine;
+    private boolean drawingLine = false;
 
     public Player(final Game game, final float x, final float y) {
         super(game, ObjectType.PLAYER, x, y);
@@ -29,6 +36,10 @@ public class Player extends Entity {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setColor(Color.BLUE);
         graphics.fillRect((int) x, (int) y, width, height);
+
+        if(this.currentLine != null){
+            this.currentLine.render(graphics);
+        }
 
         //this.playerCollision.render(graphics);
     }
@@ -48,6 +59,8 @@ public class Player extends Entity {
 
         this.handleMovement();
         this.playerCollision.checkCollisions();
+
+        //System.out.println(this.laser.toString());
     }
 
     @Override
@@ -55,6 +68,63 @@ public class Player extends Entity {
         return new Rectangle((int) x, (int) y, width, height);
     }
 
+    @Override
+    public void mouseClicked(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent event) {
+        if (event.getButton() == MouseEvent.BUTTON2) {
+            Point playerCenter = this.getPlayerCenter();
+
+            this.currentLine = new Line(this.game, playerCenter, 100);
+            this.drawingLine = true;
+
+            Point mousePosition = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), event.getComponent().getParent());
+
+            this.currentLine.updateEnd(mousePosition, playerCenter);
+
+            System.out.println("Mouse Position (Converted): " + mousePosition);
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent event) {
+        if(event.getButton() == MouseEvent.BUTTON2){
+            this.drawingLine = false;
+            this.currentLine = null;
+        }
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent event) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent event) {
+        if(this.drawingLine && this.currentLine != null){
+            this.currentLine.updateEnd(event.getPoint(), this.getPlayerCenter());
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent event) {
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent event) {
+
+    }
+
+    @Override
     public void keyPressed(final KeyEvent event) {
         switch (event.getKeyCode()){
             case KeyEvent.VK_Q, KeyEvent.VK_LEFT -> this.setLeft(true);
@@ -68,6 +138,7 @@ public class Player extends Entity {
         }
     }
 
+    @Override
     public void keyReleased(final KeyEvent event) {
         switch (event.getKeyCode()){
             case KeyEvent.VK_Q, KeyEvent.VK_LEFT -> this.setLeft(false);
@@ -84,6 +155,10 @@ public class Player extends Entity {
         }else{
             this.velocityX = 0;
         }
+    }
+
+    private Point getPlayerCenter() {
+        return new Point((int) (this.x + (float) this.width / 2), (int) (this.y + (float) this.height / 2));
     }
 
     public PlayerCollision getPlayerCollision() {
