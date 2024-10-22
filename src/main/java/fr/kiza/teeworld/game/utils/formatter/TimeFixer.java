@@ -1,8 +1,8 @@
 package fr.kiza.teeworld.game.utils.formatter;
 
 public class TimeFixer {
-    public static String formatTime(final int totalSeconds) {
-        int
+    public static String formatTime(final long totalSeconds) {
+        long
                 hours = totalSeconds / 3600,
                 minutes = (totalSeconds % 3600) / 60,
                 seconds = totalSeconds % 60;
