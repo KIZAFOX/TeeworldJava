@@ -1,6 +1,7 @@
 package fr.kiza.teeworld.game.scheduler;
 
 import fr.kiza.teeworld.game.client.window.Game;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,7 +13,7 @@ public class GameScheduler {
 
     public ScheduledExecutorService scheduler;
 
-    private static int timer = 0;
+    private static long timer = 0;
     private volatile boolean running = false;
 
     public GameScheduler(final Game game) {
@@ -46,7 +47,7 @@ public class GameScheduler {
         return scheduler;
     }
 
-    public static int getTimer() {
+    public static long getTimer() {
         return timer;
     }
 

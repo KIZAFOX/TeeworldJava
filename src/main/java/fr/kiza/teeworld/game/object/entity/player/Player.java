@@ -6,6 +6,7 @@ import fr.kiza.teeworld.game.object.entity.player.line.Line;
 import fr.kiza.teeworld.game.object.entity.player.listeners.PlayerListeners;
 import fr.kiza.teeworld.game.object.ObjectType;
 import fr.kiza.teeworld.game.object.entity.Entity;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,8 +85,6 @@ public class Player extends Entity implements ActionListener {
             Point mousePosition = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), event.getComponent().getParent());
 
             this.currentLine.updateEnd(mousePosition, playerCenter);
-
-            System.out.println("Mouse Position (Converted): " + mousePosition);
         }
     }
 

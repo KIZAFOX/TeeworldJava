@@ -8,8 +8,12 @@ import fr.kiza.teeworld.game.object.Handler;
 import fr.kiza.teeworld.game.object.camera.Camera;
 import fr.kiza.teeworld.game.utils.FPS;
 import fr.kiza.teeworld.game.utils.text.TextRenderer;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
+import fr.kiza.teeworld.mysql.database.DatabaseManager;
 
 import java.awt.*;
+import java.time.Duration;
+import java.time.Instant;
 
 import static fr.kiza.teeworld.game.client.window.GamePanel.*;
 
@@ -30,7 +34,11 @@ public class Game {
 
     private final Thread thread;
 
+    private final DatabaseManager databaseManager;
+
     public Game() {
+        final Instant start = Instant.ofEpochMilli(Instant.now().toEpochMilli());
+
         GameState.setCurrentState(GameState.MENU);
 
         this.gamePanel = new GamePanel(this);
@@ -50,9 +58,12 @@ public class Game {
         this.thread = new Thread(this.fps);
         this.thread.start();
 
-        this.log("Game started successfully!");
-        this.log(WIDTH + "x" + HEIGHT);
-        this.log(WIDTH / PIXEL + "/" + HEIGHT / PIXEL);
+        this.databaseManager = new DatabaseManager();
+        this.databaseManager.connect();
+
+        this.log("Game resolution: " +WIDTH + "x" + HEIGHT);
+        this.log("Tiles size: " + WIDTH / PIXEL + "x" + HEIGHT / PIXEL);
+        this.log("Done in: " + Duration.between(start, Instant.ofEpochMilli(Instant.now().toEpochMilli())) + "ms");
     }
 
     public void render(final Graphics2D graphics) {
@@ -105,5 +116,9 @@ public class Game {
 
     public Thread getThread() {
         return thread;
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 }
