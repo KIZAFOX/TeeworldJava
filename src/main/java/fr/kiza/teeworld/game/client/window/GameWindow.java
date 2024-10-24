@@ -1,8 +1,9 @@
 package fr.kiza.teeworld.game.client.window;
 
+import fr.kiza.teeworld.game.client.window.ui.button.handler.ButtonHandler;
+
 import javax.swing.*;
-        import java.awt.*;
-import java.awt.event.WindowAdapter;
+import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 
@@ -66,7 +67,7 @@ public class GameWindow extends JFrame {
              */
             @Override
             public void windowLostFocus(WindowEvent e) {
-
+                game.getButtonBuilder().getButton().forEach(ButtonHandler::reset);
             }
         });
     }
