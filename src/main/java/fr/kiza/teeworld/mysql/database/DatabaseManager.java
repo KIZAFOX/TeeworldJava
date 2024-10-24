@@ -2,14 +2,20 @@ package fr.kiza.teeworld.mysql.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
 
-    public static HikariDataSource connection;
+    private static HikariDataSource connection;
+
+    private final UserDAO userDAO;
+
+    public DatabaseManager() {
+        this.userDAO = new UserDAO();
+    }
 
     public void connect(){
         final HikariConfig config = new HikariConfig();
@@ -18,10 +24,10 @@ public class DatabaseManager {
         config.setUsername("root");
         config.setPassword("");
 
-        config.setMaximumPoolSize(10); // Nombre maximum de connexions dans le pool
-        config.setMinimumIdle(5);      // Nombre minimum de connexions inactives dans le pool
-        config.setIdleTimeout(30000);  // Temps (ms) avant de fermer une connexion inactive
-        config.setConnectionTimeout(10000); // Temps maximum d'attente pour obtenir une connexion (ms)
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(30000);
+        config.setConnectionTimeout(10000);
         config.setMaxLifetime(1800000);
 
         connection = new HikariDataSource(config);
@@ -34,5 +40,9 @@ public class DatabaseManager {
         } else {
             throw new IllegalStateException("DataSource is not initialized. Call connect() first.");
         }
+    }
+
+    public UserDAO getUserDAO() {
+        return userDAO;
     }
 }
