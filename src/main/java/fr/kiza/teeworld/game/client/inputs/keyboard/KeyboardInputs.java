@@ -2,8 +2,8 @@ package fr.kiza.teeworld.game.client.inputs.keyboard;
 
 import fr.kiza.teeworld.game.client.status.GameState;
 import fr.kiza.teeworld.game.client.window.Game;
-import fr.kiza.teeworld.game.client.window.ui.handler.ActionListener;
-import fr.kiza.teeworld.game.client.window.ui.handler.GuiHandler;
+import fr.kiza.teeworld.game.client.window.ui.gui.handler.ActionListener;
+import fr.kiza.teeworld.game.client.window.ui.gui.handler.GuiHandler;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
