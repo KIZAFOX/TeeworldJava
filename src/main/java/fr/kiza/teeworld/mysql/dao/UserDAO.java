@@ -12,6 +12,8 @@ public class UserDAO {
 
     private final String TABLE = "users";
 
+    public User user;
+
     public void createAccount(final String username){
         try (final Connection connection = DatabaseManager.getConnection()){
             final PreparedStatement statement = connection.prepareStatement("INSERT INTO " + TABLE + " (`name`, `timer`) VALUES (?, ?)");
@@ -19,7 +21,32 @@ public class UserDAO {
             statement.setString(1, username);
             statement.setLong(2, 0L);
             statement.executeUpdate();
+
+            this.user = new User(username, 0L);
         } catch(final SQLException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void load(final String username){
+        if(!exists(username)){
+            System.err.println("User account not found!");
+            return;
+        }
+
+        try (final Connection connection = DatabaseManager.getConnection()){
+            final PreparedStatement statement = connection.prepareStatement("SELECT id, name, timer FROM " + TABLE + " WHERE name = ?");
+
+            statement.setString(1, username);
+
+            try (final ResultSet resultSet = statement.executeQuery()){
+                if(resultSet.next()){
+                    this.user = new User(resultSet.getString("name"), resultSet.getLong("timer"));
+                }else{
+                    System.err.println("No user found with name: " + username);
+                }
+            }
+        } catch (final SQLException e){
             throw new RuntimeException(e);
         }
     }
@@ -41,7 +68,24 @@ public class UserDAO {
         return null;
     }
 
-    public long getTimer(final int id){
+    public Integer getId(final String username){
+        try (final Connection connection = DatabaseManager.getConnection()){
+            final PreparedStatement statement = connection.prepareStatement("SELECT id FROM " + TABLE + " WHERE name = ?");
+
+            statement.setString(1, username);
+
+            try (final ResultSet resultSet = statement.executeQuery()){
+                if(resultSet.next()){
+                    return resultSet.getInt("id");
+                }
+            }
+        } catch (final SQLException e){
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
+    public Long getTimer(final int id){
         try (final Connection connection = DatabaseManager.getConnection()){
             final PreparedStatement statement = connection.prepareStatement("SELECT timer FROM " + TABLE + " WHERE id = ?");
 
@@ -65,8 +109,25 @@ public class UserDAO {
             statement.setLong(1, timer);
             statement.setInt(2, id);
             statement.executeUpdate();
-        }catch (final SQLException e){
+        } catch (final SQLException e){
             throw new RuntimeException(e);
         }
+    }
+
+    public Boolean exists(final String username){
+        try (final Connection connection = DatabaseManager.getConnection()){
+            final PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM " + TABLE + " WHERE name = ?");
+
+            statement.setString(1, username);
+
+            try (final ResultSet resultSet = statement.executeQuery()){
+                if(resultSet.next()){
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+        } catch (final SQLException e){
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 }
