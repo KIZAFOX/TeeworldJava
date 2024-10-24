@@ -8,19 +8,26 @@ import fr.kiza.teeworld.game.object.ObjectType;
 import fr.kiza.teeworld.game.object.entity.player.Player;
 import fr.kiza.teeworld.game.utils.formatter.TimeFixer;
 import fr.kiza.teeworld.game.scheduler.GameScheduler;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
+import fr.kiza.teeworld.mysql.data.UserSession;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class PlayGui extends GuiHandler implements ActionListener {
+
+    private final UserDAO userDAO;
+
     public PlayGui(final Game game) {
         super(game);
+        this.userDAO = game.getDatabaseManager().getUserDAO();
     }
 
     @Override
     public void render(Graphics2D graphics) {
         this.game.getTextRenderer().renderMidCentered(graphics, TimeFixer.formatTime(GameScheduler.getTimer()));
+        this.game.getTextRenderer().renderLeftBottom(graphics, UserSession.getInstance().getUsername() + " ended the map in " + TimeFixer.formatTime(this.userDAO.getTimer(this.userDAO.getId(UserSession.getInstance().getUsername()))));
 
         graphics.translate(this.game.getCamera().getX(), this.game.getCamera().getY());
         this.game.getHandler().render(graphics);
