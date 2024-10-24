@@ -1,7 +1,6 @@
 package fr.kiza.teeworld.game.scheduler;
 
 import fr.kiza.teeworld.game.client.window.Game;
-import fr.kiza.teeworld.mysql.dao.UserDAO;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,11 +33,19 @@ public class GameScheduler {
         }
     }
 
-    public void stop() {
+    public void stop(final boolean killed) {
         if(this.running){
             this.running = false;
             this.scheduler.shutdown();
+
+            /**
+            if(!killed && (UserDAO.getTimer(1) > timer)) {
+                UserDAO.updateTimer(1, GameScheduler.getTimer());
+            }
+             */
+
             timer = 0;
+
             this.game.log("[Scheduler] GAME THREAD ENDED!");
         }
     }
