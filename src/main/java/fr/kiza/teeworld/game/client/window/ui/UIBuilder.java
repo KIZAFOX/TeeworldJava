@@ -3,6 +3,7 @@ package fr.kiza.teeworld.game.client.window.ui;
 import fr.kiza.teeworld.game.client.status.GameState;
 import fr.kiza.teeworld.game.client.window.Game;
 import fr.kiza.teeworld.game.client.window.ui.gui.HomeGui;
+import fr.kiza.teeworld.game.client.window.ui.gui.LoginGui;
 import fr.kiza.teeworld.game.client.window.ui.gui.PlayGui;
 import fr.kiza.teeworld.game.client.window.ui.gui.handler.GuiHandler;
 
@@ -27,6 +28,7 @@ public class UIBuilder {
 
         this.UI.put(GameState.MENU, () -> new HomeGui(this.game));
         this.UI.put(GameState.PLAY, () -> new PlayGui(this.game));
+        this.UI.put(GameState.LOGIN, () -> new LoginGui(this.game));
     }
 
     public Optional<GuiHandler> getGui(final GameState state){
