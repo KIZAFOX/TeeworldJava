@@ -4,7 +4,7 @@ import fr.kiza.teeworld.game.client.status.GameState;
 import fr.kiza.teeworld.game.client.window.Game;
 import fr.kiza.teeworld.game.client.window.ui.gui.HomeGui;
 import fr.kiza.teeworld.game.client.window.ui.gui.PlayGui;
-import fr.kiza.teeworld.game.client.window.ui.handler.GuiHandler;
+import fr.kiza.teeworld.game.client.window.ui.gui.handler.GuiHandler;
 
 import java.util.EnumMap;
 import java.util.HashMap;
