@@ -6,6 +6,8 @@ import fr.kiza.teeworld.game.object.entity.line.Line;
 import fr.kiza.teeworld.game.object.entity.player.listeners.PlayerListeners;
 import fr.kiza.teeworld.game.object.ObjectType;
 import fr.kiza.teeworld.game.object.entity.Entity;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
+import fr.kiza.teeworld.mysql.data.UserSession;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +21,8 @@ public class Player extends Entity implements ActionListener {
     protected final PlayerCollision playerCollision;
     protected final PlayerListeners playerListeners;
 
+    private final UserDAO user;
+
     private Line currentLine;
     private boolean drawingLine = false;
 
@@ -29,6 +33,8 @@ public class Player extends Entity implements ActionListener {
 
         this.playerCollision = new PlayerCollision(game, this);
         this.playerCollision.addListener(playerListeners = new PlayerListeners(game));
+
+        this.user = game.getDatabaseManager().getUserDAO();
     }
 
     @Override
@@ -39,7 +45,7 @@ public class Player extends Entity implements ActionListener {
 
         graphics.setColor(Color.WHITE);
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
-        //graphics.drawString(UserDAO.getUserById(1).getName(), x - 5, y - 10);
+        graphics.drawString(String.valueOf(this.user.getUser(this.user.getId(UserSession.getInstance().getUsername())).getName()), x - 5, y - 10);
 
         if(this.currentLine != null){
             this.currentLine.render(graphics);
