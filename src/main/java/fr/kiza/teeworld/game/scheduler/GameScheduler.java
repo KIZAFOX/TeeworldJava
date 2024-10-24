@@ -1,6 +1,8 @@
 package fr.kiza.teeworld.game.scheduler;
 
 import fr.kiza.teeworld.game.client.window.Game;
+import fr.kiza.teeworld.mysql.dao.UserDAO;
+import fr.kiza.teeworld.mysql.data.UserSession;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -11,13 +13,16 @@ public class GameScheduler {
     protected final Game game;
 
     public ScheduledExecutorService scheduler;
+    public final UserDAO user;
 
     private static long timer = 0;
     private volatile boolean running = false;
 
     public GameScheduler(final Game game) {
         this.game = game;
+
         this.scheduler = Executors.newScheduledThreadPool(1);
+        this.user = this.game.getDatabaseManager().getUserDAO();
     }
 
     public void start() {
@@ -38,11 +43,11 @@ public class GameScheduler {
             this.running = false;
             this.scheduler.shutdown();
 
-            /**
-            if(!killed && (UserDAO.getTimer(1) > timer)) {
-                UserDAO.updateTimer(1, GameScheduler.getTimer());
+            final int id = this.user.getId(UserSession.getInstance().getUsername());
+
+            if(!killed && (this.user.getTimer(id) == 0 || this.user.getTimer(id) > timer)) {
+                this.user.setTimer(id, GameScheduler.getTimer());
             }
-             */
 
             timer = 0;
 
