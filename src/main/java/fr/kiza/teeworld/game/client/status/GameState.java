@@ -2,7 +2,7 @@ package fr.kiza.teeworld.game.client.status;
 
 public enum  GameState {
 
-    MENU, PLAY, SETTINGS, PAUSE, LOSE, QUIT;
+    MENU, PLAY, LOGIN, SETTINGS, PAUSE, LOSE, QUIT;
 
     private static GameState currentState;
 
