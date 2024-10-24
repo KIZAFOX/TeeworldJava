@@ -11,7 +11,6 @@ import fr.kiza.teeworld.game.object.block.types.BlockStart;
 import fr.kiza.teeworld.game.object.entity.Entity;
 import fr.kiza.teeworld.game.object.entity.player.Player;
 import fr.kiza.teeworld.game.scheduler.GameScheduler;
-import fr.kiza.teeworld.mysql.dao.UserDAO;
 
 public class PlayerListeners implements CollisionListener {
 
@@ -33,11 +32,10 @@ public class PlayerListeners implements CollisionListener {
             if(block instanceof BlockStart){
                 this.gameScheduler.start();
             }else if(block instanceof BlockFinish){
-                UserDAO.updateTimer(1, GameScheduler.getTimer());
-                this.gameScheduler.stop();
+                this.gameScheduler.stop(false);
             }else if(block instanceof BlockKill){
                 player.setLocation(MapUtil.SPAWN_POINT.x(), MapUtil.SPAWN_POINT.y());
-                this.gameScheduler.stop();
+                this.gameScheduler.stop(true);
             }
         }
     }
