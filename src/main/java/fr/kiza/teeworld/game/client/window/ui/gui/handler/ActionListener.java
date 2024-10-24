@@ -1,4 +1,4 @@
-package fr.kiza.teeworld.game.client.window.ui.handler;
+package fr.kiza.teeworld.game.client.window.ui.gui.handler;
 
 import java.awt.event.*;
 

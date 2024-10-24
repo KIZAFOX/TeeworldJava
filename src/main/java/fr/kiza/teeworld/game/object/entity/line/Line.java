@@ -1,4 +1,4 @@
-package fr.kiza.teeworld.game.object.entity.player.line;
+package fr.kiza.teeworld.game.object.entity.line;
 
 import fr.kiza.teeworld.game.client.window.Game;
 import fr.kiza.teeworld.game.object.GameObject;
