@@ -19,6 +19,8 @@ import static fr.kiza.teeworld.game.client.window.GamePanel.*;
 
 public class Game {
 
+    private final DatabaseManager databaseManager;
+
     private final GamePanel gamePanel;
     private final GameWindow gameWindow;
 
@@ -35,10 +37,11 @@ public class Game {
 
     private final Thread thread;
 
-    private final DatabaseManager databaseManager;
-
     public Game() {
         final Instant start = Instant.ofEpochMilli(Instant.now().toEpochMilli());
+
+        this.databaseManager = new DatabaseManager();
+        this.databaseManager.connect();
 
         GameState.setCurrentState(GameState.MENU);
 
@@ -60,12 +63,9 @@ public class Game {
         this.thread = new Thread(this.fps);
         this.thread.start();
 
-        this.databaseManager = new DatabaseManager();
-        this.databaseManager.connect();
-
         this.log("Game resolution: " +WIDTH + "x" + HEIGHT);
         this.log("Tiles size: " + WIDTH / PIXEL + "x" + HEIGHT / PIXEL);
-        this.log("Done in: " + Duration.between(start, Instant.ofEpochMilli(Instant.now().toEpochMilli())) + "ms");
+        this.log("Done in: " + Duration.between(start, Instant.ofEpochMilli(Instant.now().toEpochMilli())).toMillis() + "ms");
     }
 
     public void render(final Graphics2D graphics) {
@@ -82,6 +82,10 @@ public class Game {
 
     public void log(final String message) {
         System.out.println("[" + this.thread.getName() + ":" + this.thread.getState() + "] " + message);
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     public GamePanel getGamePanel() {
@@ -122,9 +126,5 @@ public class Game {
 
     public Thread getThread() {
         return thread;
-    }
-
-    public DatabaseManager getDatabaseManager() {
-        return databaseManager;
     }
 }
