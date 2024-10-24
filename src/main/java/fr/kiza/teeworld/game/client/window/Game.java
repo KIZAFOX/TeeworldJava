@@ -1,6 +1,7 @@
 package fr.kiza.teeworld.game.client.window;
 
 import fr.kiza.teeworld.game.client.status.GameState;
+import fr.kiza.teeworld.game.client.window.ui.ButtonBuilder;
 import fr.kiza.teeworld.game.client.window.ui.UIBuilder;
 import fr.kiza.teeworld.game.map.MapBuilder;
 import fr.kiza.teeworld.game.map.MapUtil;
@@ -8,7 +9,6 @@ import fr.kiza.teeworld.game.object.Handler;
 import fr.kiza.teeworld.game.object.camera.Camera;
 import fr.kiza.teeworld.game.utils.FPS;
 import fr.kiza.teeworld.game.utils.text.TextRenderer;
-import fr.kiza.teeworld.mysql.dao.UserDAO;
 import fr.kiza.teeworld.mysql.database.DatabaseManager;
 
 import java.awt.*;
@@ -24,6 +24,7 @@ public class Game {
 
     private final TextRenderer textRenderer;
     private final UIBuilder uiBuilder;
+    private final ButtonBuilder buttonBuilder;
 
     private final Handler handler;
     private final Camera camera;
@@ -46,6 +47,7 @@ public class Game {
 
         this.textRenderer = new TextRenderer(this);
         this.uiBuilder = new UIBuilder(this);
+        this.buttonBuilder = new ButtonBuilder(this);
 
         this.handler = new Handler(this);
         this.camera = new Camera(0, 0);
@@ -96,6 +98,10 @@ public class Game {
 
     public UIBuilder getUiBuilder() {
         return uiBuilder;
+    }
+
+    public ButtonBuilder getButtonBuilder() {
+        return buttonBuilder;
     }
 
     public Handler getHandler() {
