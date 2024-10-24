@@ -42,7 +42,7 @@ public class PlayButton extends ButtonHandler implements ButtonAction {
     @Override
     public void mouseReleased(MouseEvent event) {
         if(this.isIn(event, this) && this.isMousePressed()){
-            GameState.setCurrentState(GameState.PLAY);
+            GameState.setCurrentState(GameState.LOGIN);
         }
         this.game.getButtonBuilder().getButton().forEach(ButtonHandler::reset);
     }
