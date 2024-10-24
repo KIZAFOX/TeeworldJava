@@ -1,12 +1,11 @@
 package fr.kiza.teeworld.game.object.entity.player;
 
 import fr.kiza.teeworld.game.client.window.Game;
-import fr.kiza.teeworld.game.client.window.ui.handler.ActionListener;
-import fr.kiza.teeworld.game.object.entity.player.line.Line;
+import fr.kiza.teeworld.game.client.window.ui.gui.handler.ActionListener;
+import fr.kiza.teeworld.game.object.entity.line.Line;
 import fr.kiza.teeworld.game.object.entity.player.listeners.PlayerListeners;
 import fr.kiza.teeworld.game.object.ObjectType;
 import fr.kiza.teeworld.game.object.entity.Entity;
-import fr.kiza.teeworld.mysql.dao.UserDAO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,6 +36,10 @@ public class Player extends Entity implements ActionListener {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setColor(Color.BLUE);
         graphics.fillRect((int) x, (int) y, width, height);
+
+        graphics.setColor(Color.WHITE);
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
+        //graphics.drawString(UserDAO.getUserById(1).getName(), x - 5, y - 10);
 
         if(this.currentLine != null){
             this.currentLine.render(graphics);
