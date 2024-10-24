@@ -12,11 +12,11 @@ public class MapUtil {
     public static final BufferedImage
             MAP_1 = ImageRenderer.load(ImageRenderer.MAP_1),
 
-            BRICK = ImageRenderer.load(ImageRenderer.BRICK),
+            BRICK = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 1, 0),
 
-            START = ImageRenderer.load(ImageRenderer.START),
-            FINISH = ImageRenderer.load(ImageRenderer.FINISH),
-            KILL = ImageRenderer.load(ImageRenderer.KILL);
+            START = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 1, 2),
+            FINISH = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 2, 2),
+            KILL = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 2, 0);
 
     public static void render(final Graphics2D graphics, final BufferedImage image, final int x, final int y){
         final int
