@@ -2,7 +2,9 @@ package fr.kiza.teeworld.game.map;
 
 import fr.kiza.teeworld.game.client.window.Game;
 import fr.kiza.teeworld.game.map.point.PointData;
-import fr.kiza.teeworld.game.object.block.Block;
+import fr.kiza.teeworld.game.object.GameObject;
+import fr.kiza.teeworld.game.object.block.handler.Block;
+import fr.kiza.teeworld.game.object.block.types.BlockBrick;
 import fr.kiza.teeworld.game.object.block.types.BlockFinish;
 import fr.kiza.teeworld.game.object.block.types.BlockKill;
 import fr.kiza.teeworld.game.object.block.types.BlockStart;
@@ -28,7 +30,7 @@ public record MapBuilder(Game game) {
                         blue = (pixel) & 0xff;
 
                 if (this.check(new Color(255, 255, 255), green, green, blue)) {
-                    this.game.getHandler().add(new Block(
+                    this.game.getHandler().add(new BlockBrick(
                             this.game,
                             xx * PIXEL,
                             yy * PIXEL
@@ -65,6 +67,13 @@ public record MapBuilder(Game game) {
                 }
             }
         }
+    }
+
+    public void updateMapStyle(){
+        this.game.getHandler().objects.stream()
+                .filter(gameObject -> gameObject instanceof Block)
+                .map(gameObject -> (Block) gameObject)
+                .forEach(GameObject::update);
     }
 
     private boolean check(final Color targetColor, final int red, final int green, final int blue) {
