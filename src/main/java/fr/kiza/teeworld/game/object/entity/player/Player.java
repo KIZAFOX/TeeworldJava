@@ -3,13 +3,13 @@ package fr.kiza.teeworld.game.object.entity.player;
 import fr.kiza.teeworld.game.client.window.Game;
 import fr.kiza.teeworld.game.client.window.ui.gui.handler.ActionListener;
 import fr.kiza.teeworld.game.object.entity.line.Line;
-import fr.kiza.teeworld.game.object.entity.player.listeners.PlayerListeners;
+import fr.kiza.teeworld.game.object.entity.player.collision.PlayerCollision;
+import fr.kiza.teeworld.game.object.entity.player.listener.PlayerListeners;
 import fr.kiza.teeworld.game.object.ObjectType;
 import fr.kiza.teeworld.game.object.entity.Entity;
 import fr.kiza.teeworld.mysql.dao.UserDAO;
 import fr.kiza.teeworld.mysql.data.UserSession;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -18,13 +18,16 @@ import static fr.kiza.teeworld.game.client.window.GamePanel.*;
 
 public class Player extends Entity implements ActionListener {
 
-    protected final PlayerCollision playerCollision;
-    protected final PlayerListeners playerListeners;
+    private static final Color PLAYER_COLOR = Color.BLUE;
+    private static final Color NAME_COLOR = Color.WHITE;
+    private static final Font NAME_FONT = new Font("Arial", Font.PLAIN, 12);
 
-    private final UserDAO user;
+    private final PlayerCollision playerCollision;
+    private final PlayerListeners playerListeners;
+    private final UserDAO userDAO;
 
     private Line currentLine;
-    private boolean drawingLine = false;
+    private boolean isDrawingLine;
 
     public Player(final Game game, final float x, final float y) {
         super(game, ObjectType.PLAYER, x, y);
@@ -32,45 +35,27 @@ public class Player extends Entity implements ActionListener {
         this.falling = true;
 
         this.playerCollision = new PlayerCollision(game, this);
-        this.playerCollision.addListener(playerListeners = new PlayerListeners(game));
+        this.playerListeners = new PlayerListeners(game);
+        this.playerCollision.addListener(playerListeners);
 
-        this.user = game.getDatabaseManager().getUserDAO();
+        this.userDAO = game.getDatabaseManager().getUserDAO();
     }
 
     @Override
     public void render(Graphics2D graphics) {
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(Color.BLUE);
-        graphics.fillRect((int) x, (int) y, width, height);
-
-        graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
-        graphics.drawString(String.valueOf(this.user.getUser(this.user.getId(UserSession.getInstance().getUsername())).getName()), x - 5, y - 10);
-
-        if(this.currentLine != null){
-            this.currentLine.render(graphics);
-        }
-
-        //this.playerCollision.render(graphics);
+        this.configureGraphics(graphics);
+        this.drawPlayer(graphics);
+        this.drawPlayerName(graphics);
+        this.drawCurrentLine(graphics);
     }
 
     @Override
     public void update() {
-        this.x += velocityX;
-        this.y += velocityY;
-
-        this.playerCollision.updatePosition(this.x, this.y, this.width, this.height);
-
-        if(this.falling || this.jumping){
-            this.velocityY = Math.min(this.velocityY + GRAVITY, MAX_SPEED);
-        }else{
-            this.velocityY = 0;
-        }
-
+        this.updatePosition();
+        this.updateVelocity();
         this.handleMovement();
-        this.playerCollision.checkCollisions();
-
-        //System.out.println(this.laser.toString());
+        this.handleCollision();
+        this.updateCurrentLine();
     }
 
     @Override
@@ -86,22 +71,14 @@ public class Player extends Entity implements ActionListener {
     @Override
     public void mousePressed(MouseEvent event) {
         if (event.getButton() == MouseEvent.BUTTON2) {
-            Point playerCenter = this.getPlayerCenter();
-
-            this.currentLine = new Line(this.game, playerCenter, 100);
-            this.drawingLine = true;
-
-            Point mousePosition = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), event.getComponent().getParent());
-
-            this.currentLine.updateEnd(mousePosition, playerCenter);
+            startDrawingLine(event);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent event) {
-        if(event.getButton() == MouseEvent.BUTTON2){
-            this.drawingLine = false;
-            this.currentLine = null;
+        if (event.getButton() == MouseEvent.BUTTON2) {
+            stopDrawingLine();
         }
     }
 
@@ -117,14 +94,12 @@ public class Player extends Entity implements ActionListener {
 
     @Override
     public void mouseDragged(MouseEvent event) {
-        if(this.drawingLine && this.currentLine != null){
-            this.currentLine.updateEnd(event.getPoint(), this.getPlayerCenter());
-        }
+        updateLinePosition(event);
     }
 
     @Override
     public void mouseMoved(MouseEvent event) {
-
+        updateLinePosition(event);
     }
 
     @Override
@@ -134,39 +109,117 @@ public class Player extends Entity implements ActionListener {
 
     @Override
     public void keyPressed(final KeyEvent event) {
-        switch (event.getKeyCode()){
-            case KeyEvent.VK_Q, KeyEvent.VK_LEFT -> this.setLeft(true);
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.setRight(true);
-            case KeyEvent.VK_Z, KeyEvent.VK_UP -> {
-                if(this.isJumping()) return;
-                this.setJumping(true);
-                this.setVelocityY(JUMP_SPEED);
-            }
-            default -> { }
+        switch (event.getKeyCode()) {
+            case KeyEvent.VK_Q, KeyEvent.VK_LEFT -> setLeft(true);
+            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> setRight(true);
+            case KeyEvent.VK_Z, KeyEvent.VK_UP -> handleJump();
         }
     }
 
     @Override
     public void keyReleased(final KeyEvent event) {
-        switch (event.getKeyCode()){
-            case KeyEvent.VK_Q, KeyEvent.VK_LEFT -> this.setLeft(false);
-            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> this.setRight(false);
-            default -> { }
+        switch (event.getKeyCode()) {
+            case KeyEvent.VK_Q, KeyEvent.VK_LEFT -> setLeft(false);
+            case KeyEvent.VK_D, KeyEvent.VK_RIGHT -> setRight(false);
         }
     }
 
-    private void handleMovement(){
-        if(this.isLeft() && !this.isRight()){
-            this.velocityX = -MOVE_SPEED;
-        }else if(this.isRight() && !this.isLeft()){
-            this.velocityX = MOVE_SPEED;
-        }else{
-            this.velocityX = 0;
+    /**
+     * Render
+     *
+     */
+
+    private void configureGraphics(Graphics2D graphics) {
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    }
+
+    private void drawPlayer(Graphics2D graphics) {
+        graphics.setColor(PLAYER_COLOR);
+        graphics.fillRect((int) x, (int) y, width, height);
+    }
+
+    private void drawPlayerName(Graphics2D graphics) {
+        graphics.setColor(NAME_COLOR);
+        graphics.setFont(NAME_FONT);
+        String playerName = userDAO.getUser(userDAO.getId(UserSession.getInstance().getUsername())).getName();
+        graphics.drawString(playerName, x - 5, y - 10);
+    }
+
+    private void drawCurrentLine(Graphics2D graphics) {
+        if (currentLine != null) {
+            currentLine.render(graphics);
+        }
+    }
+
+    /**
+     * Update
+     *
+     */
+
+    private void updatePosition() {
+        x += velocityX;
+        y += velocityY;
+        playerCollision.updatePosition(x, y, width, height);
+    }
+
+    private void updateVelocity() {
+        if (falling || jumping) {
+            velocityY = Math.min(velocityY + GRAVITY, MAX_SPEED);
+        } else {
+            velocityY = 0;
+        }
+    }
+
+    private void handleMovement() {
+        if (isLeft() && !isRight()) {
+            velocityX = -MOVE_SPEED;
+        } else if (isRight() && !isLeft()) {
+            velocityX = MOVE_SPEED;
+        } else {
+            velocityX = 0;
+        }
+    }
+
+    private void handleCollision() {
+        this.playerCollision.checkCollisions();
+    }
+
+    private void updateCurrentLine() {
+        if (currentLine != null) {
+            currentLine.setStart(getPlayerCenter());
+        }
+    }
+
+    private void handleJump() {
+        if (!isJumping()) {
+            setJumping(true);
+            setVelocityY(JUMP_SPEED);
+        }
+    }
+
+    private void startDrawingLine(MouseEvent event) {
+        currentLine = new Line(game, getPlayerCenter(), 100);
+        isDrawingLine = true;
+        updateLinePosition(event);
+    }
+
+    private void stopDrawingLine() {
+        isDrawingLine = false;
+        currentLine = null;
+    }
+
+    private void updateLinePosition(MouseEvent event) {
+        if (isDrawingLine && currentLine != null) {
+            Point mousePosition = event.getPoint();
+            Point playerCenter = getPlayerCenter();
+
+            currentLine.setStart(playerCenter);
+            currentLine.updateDirection(mousePosition);
         }
     }
 
     private Point getPlayerCenter() {
-        return new Point((int) (this.x + (float) this.width / 2), (int) (this.y + (float) this.height / 2));
+        return new Point((int) (x + (float) width / 2), (int) (y + (float) height / 2));
     }
 
     public PlayerCollision getPlayerCollision() {
