@@ -19,10 +19,10 @@ public class DatabaseManager {
 
     public void connect(){
         final HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://localhost:3306/teeworlds");
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        config.setUsername("root");
-        config.setPassword("");
+        config.setJdbcUrl("jdbc:postgresql://host.docker.internal:5432/teeworlds");
+        config.setDriverClassName("org.postgresql.Driver");
+        config.setUsername("myuser");
+        config.setPassword("mypassword");
 
         config.setMaximumPoolSize(10);
         config.setMinimumIdle(5);
