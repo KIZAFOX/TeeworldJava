@@ -15,6 +15,8 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+import static fr.kiza.teeworld.game.map.style.MapStyle.*;
+
 public class PlayGui extends GuiHandler implements ActionListener {
 
     private final UserDAO userDAO;
@@ -85,8 +87,12 @@ public class PlayGui extends GuiHandler implements ActionListener {
 
     @Override
     public void keyPressed(KeyEvent event) {
-        if(event.getKeyCode() == KeyEvent.VK_ESCAPE){
-            GameState.setCurrentState(GameState.MENU);
+        switch (event.getKeyCode()){
+            case KeyEvent.VK_ESCAPE -> GameState.setCurrentState(GameState.MENU);
+            case KeyEvent.VK_P -> {
+                style = !style;
+                this.game.getMapBuilder().updateMapStyle();
+            }
         }
 
         this.handleKeyboardEvent(event);
