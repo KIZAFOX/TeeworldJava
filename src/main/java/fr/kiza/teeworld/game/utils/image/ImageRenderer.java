@@ -12,7 +12,8 @@ public class ImageRenderer {
     public static final String
             MAP_1 = "map.png",
 
-            TILE_SET = "assets/tileset.png";
+            TILE_SET = "assets/tileset.png",
+            BRICKS_TILE_SET = "assets/bricks.png";
 
     public static BufferedImage load(final String fileName){
         final InputStream inputStream = ImageRenderer.class.getResourceAsStream("/" + fileName);
