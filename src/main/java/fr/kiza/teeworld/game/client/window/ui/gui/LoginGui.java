@@ -18,7 +18,7 @@ public class LoginGui extends GuiHandler implements ActionListener {
 
     private final JTextField usernameField;
 
-    private String username = "", loadingMessage = "";
+    private String username = "KIZA", loadingMessage = "";
     private boolean showCursor, showSuccess = false, showError = false;
     private int loadingProgress = 0;
 
