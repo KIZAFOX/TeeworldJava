@@ -6,13 +6,15 @@ import fr.kiza.teeworld.game.utils.image.ImageRenderer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static fr.kiza.teeworld.game.map.style.MapStyle.*;
+
 public class MapUtil {
     public static PointData SPAWN_POINT;
 
     public static final BufferedImage
             MAP_1 = ImageRenderer.load(ImageRenderer.MAP_1),
 
-            BRICK = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 1, 0),
+            BRICK = getBrickImage(),
 
             START = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 1, 2),
             FINISH = ImageRenderer.cropImage(ImageRenderer.TILE_SET, 2, 2),
