@@ -2,14 +2,14 @@ package fr.kiza.teeworld.game.object.block.types;
 
 import fr.kiza.teeworld.game.client.window.Game;
 import fr.kiza.teeworld.game.map.MapUtil;
-import fr.kiza.teeworld.game.object.GameObject;
 import fr.kiza.teeworld.game.object.ObjectType;
+import fr.kiza.teeworld.game.object.block.handler.Block;
 
 import java.awt.*;
 
 import static fr.kiza.teeworld.game.client.window.GamePanel.*;
 
-public class BlockStart extends GameObject {
+public class BlockStart extends Block {
     public BlockStart(Game game, float x, float y) {
         super(game, ObjectType.BLOCK_START, x, y);
         this.width = PIXEL;
