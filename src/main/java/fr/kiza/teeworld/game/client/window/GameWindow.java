@@ -27,11 +27,13 @@ public class GameWindow extends JFrame {
     public GameWindow(final Game game) throws HeadlessException {
         this.game = game;
 
+        /*
         final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         final GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 
-        //this.setExtendedState(MAXIMIZED_BOTH);
-        //this.setUndecorated(true);
+        this.setExtendedState(MAXIMIZED_BOTH);
+        this.setUndecorated(true);
+         */
 
         this.setTitle("StickmanGame - v1.0");
         this.add(this.game.getGamePanel());
